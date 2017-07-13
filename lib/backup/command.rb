@@ -88,50 +88,8 @@ module Backup #:nodoc:
     end
 
     def upload_archive(name, path)
-      # Initialize the upload
-      upload = @vault.initiate_multipart_upload({
-        archive_description: "#{name} #{DateTime.now.to_s}",
-        part_size: 1024 * 1024
-      })
-
-      # Calculate segment sizes
-      part_size = 1024 * 1024 # Specifically 1MB so we don't need to calculate hash trees
-      file_size = File.size path
-      total_parts = (file_size / part_size).ceil
-
-      # Build a tree hasher to do all of the hashing work
-      hasher = TreeHasher.new
-
-      # Upload each part, collecting the hash
-      0.upto(total_parts).each do |idx|
-        start_byte = idx * part_size
-        end_byte = ((idx * part_size) + part_size) - 1
-
-        end_byte = file_size - 1 if end_byte > file_size
-
-        bytes = IO.read path, 1024 * 1024, start_byte
-        hash = hasher.hash_data bytes
-
-        logger.info "Uploading part #{idx}: #{start_byte}-#{end_byte}: #{hash}"
-        result = upload.upload_part({
-          checksum: hash,
-          range: "bytes #{start_byte}-#{end_byte}/*",
-          body: bytes
-        })
-
-        logger.debug("Upload part #{idx} result: #{result.inspect}")
-      end
-
-      # Hash the entire thing
-      hash = hasher.hash_file path
-
-      # Finalize the upload
-      result = upload.complete({
-        archive_size: file_size,
-        checksum: hash
-      })
-
-      logger.debug "Upload complete result: #{result.inspect}"
+      uploader = ArchiveUploader.new @vault
+      uploader.upload path, name: name
     end
 
     def purge_archives
