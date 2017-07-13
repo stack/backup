@@ -1,0 +1,53 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require 'backup'
+require 'backup/command'
+require 'optparse'
+
+include Backup
+
+# Prepare the logger
+logger = Logger.new(STDOUT)
+Logging.logger = logger
+
+# Log the version
+logger.info "Backup #{Backup::VERSION}"
+
+# Parse the options from the command line
+options = {}
+option_parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: backup [options]'
+
+  opts.on('-cPATH', '--config=PATH', 'Path to the configuration file') do |c|
+    options[:config] = c
+  end
+end
+
+option_parser.parse!
+
+# Ensure the config file is specified
+if options[:config].nil?
+  $stderr.puts 'You must specify a config file'
+  exit 1
+end
+
+# Ensure the config file exists
+unless File.file? options[:config]
+  $stderr.puts 'The specified config file does not exist'
+  exit 1
+end
+
+# Attemp to parse the config file
+begin
+  config = ConfigParser.load_file options[:config]
+rescue => e
+  $stderr.puts 'Failed parsing the config file'
+  $stderr.puts e.message
+  exit 1
+end
+
+# Run the command
+command = Command.new config
+exit command.run
