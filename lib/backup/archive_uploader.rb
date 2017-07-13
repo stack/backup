@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'concurrent/executors'
+
 module Backup #:nodoc:
   # Upload a local file to a given vault
   class ArchiveUploader
@@ -14,18 +16,23 @@ module Backup #:nodoc:
 
     def upload(path, opts = {})
       # Normalize the options
-      opts[:name] ||= File.basename(path)
       opts[:chunk_size] ||= DEFAULT_CHUNK_SIZE
+      opts[:name] ||= File.basename(path)
+      opts[:workers] ||= Concurrent.processor_count
 
       # Begin the upload
       upload = create_upload path, opts[:name], opts[:chunk_size]
 
       # Calculate the parts
       file_size = File.size path
-      total_parts = (file_size / opts[:chunk_size]).ceil
+      total_parts = (file_size.to_f / opts[:chunk_size].to_f).ceil
+
+      # Build a thread pool for parallelizing work
+      pool = Concurrent::FixedThreadPool.new opts[:workers]
+      latch = Concurrent::CountDownLatch.new total_parts
 
       # Upload each part
-      0.upto(total_parts).each do |idx|
+      0.upto(total_parts - 1).each do |idx|
         start_byte = idx * opts[:chunk_size]
         end_byte = ((idx * opts[:chunk_size]) + opts[:chunk_size]) - 1
 
@@ -34,15 +41,23 @@ module Backup #:nodoc:
         bytes = IO.read path, opts[:chunk_size], start_byte
         hash = @hasher.hash_data bytes
 
-        logger.info "Uploading part #{idx}: #{start_byte}-#{end_byte}: #{hash}"
-        result = upload.upload_part({
-          checksum: hash,
-          range: "bytes #{start_byte}-#{end_byte}/*",
-          body: bytes
-        })
+        pool.post do
+          logger.info "Uploading part #{idx}: #{start_byte}-#{end_byte}: #{hash}"
 
-        logger.debug("Upload part #{idx} result: #{result.inspect}")
+          result = upload.upload_part({
+            checksum: hash,
+            range: "bytes #{start_byte}-#{end_byte}/*",
+            body: bytes
+          })
+
+          logger.debug("Upload part #{idx} result: #{result.inspect}")
+
+          latch.count_down
+        end
       end
+
+      # Wait for the pool to finish
+      latch.wait
 
       # Complete the upload
       complete_upload path, upload
