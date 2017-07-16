@@ -1,0 +1,83 @@
+#!/usr/bin/env ruby
+
+# frozen_string_literal: true
+
+require 'backup'
+require 'optparse'
+
+include Backup
+
+# Prepare the logger
+logger = Logger.new(STDOUT)
+Logging.logger = logger
+
+# Log the version
+logger.info "Backup #{Backup::VERSION} Scratch"
+
+# Parse the options from the command line
+options = {}
+option_parser = OptionParser.new do |opts|
+  opts.banner = 'Usage: scratch [options]'
+
+  opts.on('-cPATH', '--config=PATH', 'Path to the configuration file') do |c|
+    options[:config] = c
+  end
+end
+
+option_parser.parse!
+
+# Ensure the config file is specified
+if options[:config].nil?
+  $stderr.puts 'You must specify a config file'
+  exit 1
+end
+
+# Ensure the config file exists
+unless File.file? options[:config]
+  $stderr.puts 'The specified config file does not exist'
+  exit 1
+end
+
+# Attemp to parse the config file
+begin
+  config = ConfigParser.load_file options[:config]
+rescue => e
+  $stderr.puts 'Failed parsing the config file'
+  $stderr.puts e.message
+  exit 1
+end
+
+# Set up the Glacier client
+credentials = Aws::Credentials.new config.aws_access_key_id, config.aws_secret_access_key
+glacier_client = Aws::Glacier::Client.new({
+  credentials: credentials,
+  region: config.glacier_arn
+})
+
+# Get the vault
+vault_description = glacier_client.describe_vault({
+  account_id: config.aws_user,
+  vault_name: config.glacier_vault
+})
+
+vault = Aws::Glacier::Vault.new({
+  account_id: config.aws_user,
+  client: glacier_client,
+  name: vault_description.vault_name
+})
+
+# Get the completed jobs
+vault.completed_jobs.each do |job|
+  puts "Completed job: #{job.inspect}"
+  puts "- #{job.get_output.body.read}"
+end
+
+vault.jobs_in_progress.each do |job|
+  puts "In progress job: #{job.inspect}"
+end
+
+# Start an inventory requst if there are not completed jobs
+if vault.jobs_in_progress.count == 0
+  job = vault.initiate_inventory_retrieval
+  puts "Initiated job: #{job}"
+end

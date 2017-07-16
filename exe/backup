@@ -3,7 +3,7 @@
 # frozen_string_literal: true
 
 require 'backup'
-require 'backup/command'
+require 'backup/main_loop'
 require 'optparse'
 
 include Backup
@@ -16,12 +16,19 @@ Logging.logger = logger
 logger.info "Backup #{Backup::VERSION}"
 
 # Parse the options from the command line
-options = {}
+options = {
+  force: false
+}
+
 option_parser = OptionParser.new do |opts|
   opts.banner = 'Usage: backup [options]'
 
   opts.on('-cPATH', '--config=PATH', 'Path to the configuration file') do |c|
     options[:config] = c
+  end
+
+  opts.on('-f', '--force', 'Force a backup immediately') do
+    options[:force] = true
   end
 end
 
@@ -49,5 +56,5 @@ rescue => e
 end
 
 # Run the command
-command = Command.new config
+command = MainLoop.new config, force: true
 exit command.run

@@ -36,6 +36,7 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency 'aws-sdk', '~> 2.10'
   spec.add_dependency 'concurrent-ruby', '~> 1.0'
+  spec.add_dependency 'eventmachine', '~> 1.2'
   spec.add_dependency 'minitar', '~> 0.6.1'
   spec.add_dependency 'ruby-xz', '~> 0.2.3'
 

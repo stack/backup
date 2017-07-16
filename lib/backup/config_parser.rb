@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'aws-sdk'
+require 'time'
 require 'yaml'
 
 module Backup #:nodoc:
@@ -15,13 +16,16 @@ module Backup #:nodoc:
 
     attr_reader :backup_directories
 
+    attr_reader :purge_age
+
     DEFAULT_OPTIONS = {
       'aws_access_key_id'     => '',
       'aws_secret_access_key' => '',
       'aws_user'              => '-',
       'glacier_arn'           => '',
       'glacier_vault'         => '',
-      'backup_directories'    => []
+      'backup_directories'    => [],
+      'purge_age'             => 432, # 18 days, in hours
     }.freeze
 
     def initialize
@@ -64,6 +68,9 @@ module Backup #:nodoc:
       # Parse the backup directories
       @backup_directories = opts['backup_directories']
 
+      # Parse the purge parameters
+      @purge_age = opts['purge_age'].to_i
+
       # TODO: Validate options
     end
 
@@ -78,6 +85,8 @@ module Backup #:nodoc:
       @glacier_vault = DEFAULT_OPTIONS['glacier_vault']
 
       @backup_directories = DEFAULT_OPTIONS['backup_directories']
+
+      @purge_age = DEFAULT_OPTIONS['purge_age']
     end
   end
 end

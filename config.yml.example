@@ -7,3 +7,4 @@ backup_directories:
     -
         name: 'foo'
         path: '/tmp/foo'
+purge_age: 432
