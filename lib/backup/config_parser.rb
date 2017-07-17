@@ -17,6 +17,7 @@ module Backup #:nodoc:
     attr_reader :backup_directories
 
     attr_reader :purge_age
+    attr_reader :purge_interval
 
     DEFAULT_OPTIONS = {
       'aws_access_key_id'     => '',
@@ -26,6 +27,7 @@ module Backup #:nodoc:
       'glacier_vault'         => '',
       'backup_directories'    => [],
       'purge_age'             => 432, # 18 days, in hours
+      'purge_interval'        => 1, # Every 1 hour
     }.freeze
 
     def initialize
@@ -70,6 +72,7 @@ module Backup #:nodoc:
 
       # Parse the purge parameters
       @purge_age = opts['purge_age'].to_i
+      @purge_interval = opts['purge_interval'].to_i
 
       # TODO: Validate options
     end
@@ -87,6 +90,7 @@ module Backup #:nodoc:
       @backup_directories = DEFAULT_OPTIONS['backup_directories']
 
       @purge_age = DEFAULT_OPTIONS['purge_age']
+      @purge_interval = DEFAULT_OPTIONS['purge_interval']
     end
   end
 end

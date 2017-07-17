@@ -40,11 +40,11 @@ module Backup #:nodoc:
       # Build the purge manager
       @purge_manager = PurgeManager.new @client, @vault, @config
 
-      # TODO: Build the backup manager
+      # TODO: Build the backup managers
 
       EventMachine.run do
         # Schedule and run the purge manager
-        @purge_manager_timer = EventMachine::PeriodicTimer.new(60 * 60) do
+        @purge_manager_timer = EventMachine::PeriodicTimer.new(@config.purge_interval * 60 * 60) do
           @purge_manager.run
         end
 
