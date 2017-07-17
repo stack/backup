@@ -55,6 +55,6 @@ rescue => e
   exit 1
 end
 
-# Run the command
-command = MainLoop.new config, force: true
-exit command.run
+# Run the main loop
+main_loop = MainLoop.new config, force: true
+exit main_loop.run
