@@ -15,6 +15,7 @@ module Backup #:nodoc:
     attr_reader :glacier_vault
 
     attr_reader :backup_directories
+    attr_reader :backup_interval
 
     attr_reader :purge_age
     attr_reader :purge_interval
@@ -26,6 +27,7 @@ module Backup #:nodoc:
       'glacier_arn'           => '',
       'glacier_vault'         => '',
       'backup_directories'    => [],
+      'backup_interval'       => 24, # Every 24 hours
       'purge_age'             => 432, # 18 days, in hours
       'purge_interval'        => 1, # Every 1 hour
     }.freeze
@@ -69,6 +71,7 @@ module Backup #:nodoc:
 
       # Parse the backup directories
       @backup_directories = opts['backup_directories']
+      @backup_interval = opts['backup_interval']
 
       # Parse the purge parameters
       @purge_age = opts['purge_age'].to_i
@@ -88,6 +91,7 @@ module Backup #:nodoc:
       @glacier_vault = DEFAULT_OPTIONS['glacier_vault']
 
       @backup_directories = DEFAULT_OPTIONS['backup_directories']
+      @backup_interval = DEFAULT_OPTIONS['backup_interval']
 
       @purge_age = DEFAULT_OPTIONS['purge_age']
       @purge_interval = DEFAULT_OPTIONS['purge_interval']

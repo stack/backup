@@ -40,7 +40,9 @@ module Backup #:nodoc:
       # Build the purge manager
       @purge_manager = PurgeManager.new @client, @vault, @config
 
-      # TODO: Build the backup managers
+      # Build the backup managers
+      @directory_backup_manager = DirectoryBackupManager.new @vault, @config
+      # TODO: Build the MySQL backup manager
 
       EventMachine.run do
         # Schedule and run the purge manager
@@ -49,6 +51,14 @@ module Backup #:nodoc:
         end
 
         @purge_manager.run if @options[:force]
+
+        # Schedule and run the backup managers
+        @backup_managers_timer = EventMachine::PeriodicTimer.new(@config.backup_interval * 60 * 60) do
+          @directory_backup_manager.run
+          # TODO: Run MySQL backup manager
+        end
+
+        @directory_backup_manager.run if @options[:force]
       end
 
       return 0

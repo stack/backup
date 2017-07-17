@@ -7,5 +7,6 @@ backup_directories:
     -
         name: 'foo'
         path: '/tmp/foo'
+backup_interval: 24
 purge_age: 432
 purge_interval: 1
