@@ -46,8 +46,8 @@ module Backup #:nodoc:
             slice.first
           else
             @digest.reset
-            @digest << slice[0].scan(/../).map { |x| x.hex }.pack('c*')
-            @digest << slice[1].scan(/../).map { |x| x.hex }.pack('c*')
+            @digest << slice[0].scan(/../).map(&:hex).pack('c*')
+            @digest << slice[1].scan(/../).map(&:hex).pack('c*')
 
             @digest.hexdigest
           end
@@ -66,12 +66,12 @@ module Backup #:nodoc:
       hashes = []
       bytes_read = 0
 
-      while true
+      loop do
         # Have we hit the end of the data
-        break if (length != 0 && bytes_read >= length)
+        break if length != 0 && bytes_read >= length
 
         # How much data do we need to read?
-        if length == 0
+        if length.zero?
           bytes_to_read = ONE_MB
         else
           bytes_to_read = length - bytes_read

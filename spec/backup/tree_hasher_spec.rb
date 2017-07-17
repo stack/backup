@@ -5,8 +5,8 @@ require 'tempfile'
 
 RSpec.describe Backup::TreeHasher do
   ONE_MB = (1024 * 1024).freeze
-  ONE_MB_HASH = '30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58'.freeze
-  ONE_MB_ONE_B_HASH = '28638dab8d5e1754a4ecb38b0ebe6df66c844f94aed142d4d0283d208bb786cd'.freeze
+  ONE_MB_HASH = '30e14955ebf1352266dc2ff8067e68104607e750abb9d3b36582b8af909fcb58'
+  ONE_MB_ONE_B_HASH = '28638dab8d5e1754a4ecb38b0ebe6df66c844f94aed142d4d0283d208bb786cd'
 
   it 'hashes 1MB of zeros' do
     data = generate_bytes(ONE_MB)
@@ -123,7 +123,6 @@ RSpec.describe Backup::TreeHasher do
 
     file.unlink
   end
-
 
   private
 

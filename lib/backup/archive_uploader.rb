@@ -21,7 +21,7 @@ module Backup #:nodoc:
       opts[:workers] ||= Concurrent.processor_count
 
       # Begin the upload
-      upload = create_upload path, opts[:name], opts[:chunk_size]
+      upload = create_upload opts[:name], opts[:chunk_size]
 
       # Calculate the parts
       file_size = File.size path
@@ -44,11 +44,11 @@ module Backup #:nodoc:
         pool.post do
           logger.info "Uploading part #{idx}: #{start_byte}-#{end_byte}: #{hash}"
 
-          result = upload.upload_part({
+          result = upload.upload_part(
             checksum: hash,
             range: "bytes #{start_byte}-#{end_byte}/*",
             body: bytes
-          })
+          )
 
           logger.debug("Upload part #{idx} result: #{result.inspect}")
 
@@ -69,19 +69,19 @@ module Backup #:nodoc:
       file_size = File.size path
       hash = @hasher.hash_file path
 
-      result = upload.complete({
+      result = upload.complete(
         archive_size: file_size,
         checksum: hash
-      })
+      )
 
       logger.debug "Upload complete result: #{result.inspect}"
     end
 
-    def create_upload(path, name, chunk_size)
-      @vault.initiate_multipart_upload({
+    def create_upload(name, chunk_size)
+      @vault.initiate_multipart_upload(
         archive_description: name,
         part_size: chunk_size
-      })
+      )
     end
   end
 end

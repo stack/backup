@@ -47,6 +47,5 @@ module Backup #:nodoc:
       uploader = ArchiveUploader.new @vault
       uploader.upload path, name: name
     end
-
   end
 end

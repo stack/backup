@@ -74,12 +74,12 @@ module Backup #:nodoc:
       # Send a delete request for each filtered archive
       archives.each do |archive_info|
         logger.info "Purging #{archive_info['ArchiveId']} from #{archive_info['CreationDate']}"
-        archive = Aws::Glacier::Archive.new({
+        archive = Aws::Glacier::Archive.new(
           account_id: @vault.account_id,
           vault_name: @vault.name,
           id: archive_info['ArchiveId'],
           client: @client
-        })
+        )
 
         archive.delete
       end
@@ -126,9 +126,7 @@ module Backup #:nodoc:
         job.creation_date > (now - (8 * 60 * 60))
       end
 
-      if jobs.empty?
-        start_inventory_request
-      end
+      start_inventory_request if jobs.empty?
     end
 
     def run_waiting
