@@ -50,11 +50,19 @@ module Backup #:nodoc:
     end
 
     def compress_directory(name, path)
+      directory = File.basename path
+      parent_directory = File.dirname path
+
       destination = Dir::Tmpname.create(["#{name}-", '.tar.xz']) { }
 
+      previous_dir = Dir.getwd
+      Dir.chdir parent_directory
+
       XZ::StreamWriter.open destination do |txz|
-        Archive::Tar::Minitar.pack path, txz
+        Archive::Tar::Minitar.pack directory, txz
       end
+
+      Dir.chdir previous_dir
 
       destination
     end
