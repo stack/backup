@@ -42,15 +42,13 @@ module Backup #:nodoc:
         hash = @hasher.hash_data bytes
 
         pool.post do
-          logger.info "Uploading part #{idx}: #{start_byte}-#{end_byte}: #{hash}"
+          logger.info "Uploading part #{idx}: #{start_byte}-#{end_byte}"
 
-          result = upload.upload_part(
+          upload.upload_part(
             checksum: hash,
             range: "bytes #{start_byte}-#{end_byte}/*",
             body: bytes
           )
-
-          logger.debug("Upload part #{idx} result: #{result.inspect}")
 
           latch.count_down
         end
@@ -74,7 +72,7 @@ module Backup #:nodoc:
         checksum: hash
       )
 
-      logger.debug "Upload complete result: #{result.inspect}"
+      logger.debug "Upload complete for #{result.archive_id}"
     end
 
     def create_upload(name, chunk_size)

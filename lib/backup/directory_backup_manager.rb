@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'minitar'
+require 'xz'
+
 module Backup #:nodoc:
   # Manages the backing up of directories
   class DirectoryBackupManager
@@ -40,7 +43,20 @@ module Backup #:nodoc:
       # Start the upload
       upload_archive name, destination
 
+      # Delete the generated file
+      FileUtils.rm destination
+
       true
+    end
+
+    def compress_directory(name, path)
+      destination = Dir::Tmpname.create(["#{name}-", '.tar.xz']) { }
+
+      XZ::StreamWriter.open destination do |txz|
+        Archive::Tar::Minitar.pack path, txz
+      end
+
+      destination
     end
 
     def upload_archive(name, path)
