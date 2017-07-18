@@ -50,7 +50,7 @@ module Backup #:nodoc:
       directory = File.basename path
       parent_directory = File.dirname path
 
-      destination = Dir::Tmpname.create(["#{name}-", '.tar.xz']) { }
+      destination = Dir::Tmpname.create(["#{name}-", '.tar.xz']) {}
 
       previous_dir = Dir.getwd
       Dir.chdir parent_directory
