@@ -11,14 +11,20 @@ Although the project is structured as a Ruby gem, it is not intended to be relea
 The following options are available for the `config.yml` file:
 
 `aws_access_key_id`: The AWS access key ID.
-`aws_secret_access_key`: The AWS secret access key.
-`glacier_arn`: The Amazon Resource Name to store your backups in.
-`glacier_vault`: The existing Amazon Glacier Vault to store your backups in.
-`backup_directories`: A list of directories that should be backed up. Each entry requires a `name` and `path`.
-`backup_interval`: The interval in hours to back up each directory.
-`purge_age`: The age in hours before an archive is deleted.
-`purge_interval`: The interval in hours to start a purge discovery process.
 
+`aws_secret_access_key`: The AWS secret access key.
+
+`glacier_arn`: The Amazon Resource Name to store your backups in.
+
+`glacier_vault`: The existing Amazon Glacier Vault to store your backups in.
+
+`backup_directories`: A list of directories that should be backed up. Each entry requires a `name` and `path`.
+
+`backup_interval`: The interval in hours to back up each directory.
+
+`purge_age`: The age in hours before an archive is deleted.
+
+`purge_interval`: The interval in hours to start a purge discovery process.
 
 ## Usage
 
@@ -28,12 +34,6 @@ After you have created your `config.yml` file, simply run the following from the
 
 The above command will run forever, performing backups and purges as configured. The scheduled tasks do not fire immediately. If you would also like to perform these tasks immediately on launch, add the `-f` option.
 
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/backup.
+Bug reports and pull requests are welcome on GitHub at https://github.com/stack/backup.
