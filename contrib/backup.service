@@ -1,0 +1,14 @@
+[Unit]
+Description=Stack's Backup Daemon
+
+[Service]
+ExecStart=/usr/local/bin/bundle exec ./exe/backup -c config.yml -f
+WorkingDirectory=/home/maintenance/backup
+StandardOutput=syslog
+StandardError=system
+Restart=always
+User=maintenance
+Group=maintenance
+
+[Install]
+WantedBy=multi-user.target

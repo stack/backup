@@ -34,6 +34,8 @@ After you have created your `config.yml` file, simply run the following from the
 
 The above command will run forever, performing backups and purges as configured. The scheduled tasks do not fire immediately. If you would also like to perform these tasks immediately on launch, add the `-f` option.
 
+An example systemd service file is available in the `contrib` folder. For Debian / Ubuntu systems, install the file in `/etc/systemd/system`. Be sure to modify the service file for your specific directories and user.
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/stack/backup.
