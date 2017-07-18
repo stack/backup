@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'minitar'
-require 'xz'
-
 module Backup #:nodoc:
   # Manages the backing up of directories
   class DirectoryBackupManager
@@ -58,9 +55,8 @@ module Backup #:nodoc:
       previous_dir = Dir.getwd
       Dir.chdir parent_directory
 
-      XZ::StreamWriter.open destination do |txz|
-        Archive::Tar::Minitar.pack directory, txz
-      end
+      args = ['tar', 'cfJ', destination, directory]
+      system(*args)
 
       Dir.chdir previous_dir
 
