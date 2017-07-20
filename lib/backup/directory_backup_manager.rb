@@ -21,7 +21,7 @@ module Backup #:nodoc:
     private
 
     def backup_directory(directory)
-      name = directory['name']
+      name = "#{directory['name']}-directory"
       path = directory['path']
 
       logger.info "Backing up directory #{path}"
