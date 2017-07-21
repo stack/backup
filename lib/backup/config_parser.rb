@@ -17,6 +17,12 @@ module Backup #:nodoc:
     attr_reader :backup_directories
     attr_reader :backup_interval
 
+    attr_reader :mysql_host
+    attr_reader :mysql_port
+    attr_reader :mysql_user
+    attr_reader :mysql_password
+    attr_reader :mysql_databases
+
     attr_reader :purge_age
     attr_reader :purge_interval
 
@@ -28,6 +34,11 @@ module Backup #:nodoc:
       'glacier_vault'         => '',
       'backup_directories'    => [],
       'backup_interval'       => 24, # Every 24 hours
+      'mysql_host'            => 'localhost',
+      'mysql_port'            => 3306,
+      'mysql_user'            => 'me',
+      'mysql_password'        => 'password',
+      'mysql_databases'       => [],
       'purge_age'             => 432, # 18 days, in hours
       'purge_interval'        => 1, # Every 1 hour
     }.freeze
@@ -73,6 +84,13 @@ module Backup #:nodoc:
       @backup_directories = opts['backup_directories']
       @backup_interval = opts['backup_interval']
 
+      # Parse the MySQL database settings
+      @mysql_host = opts['mysql_host']
+      @mysql_port = opts['mysql_port']
+      @mysql_user = opts['mysql_user']
+      @mysql_password = opts['mysql_password']
+      @mysql_databases = opts['mysql_databases']
+
       # Parse the purge parameters
       @purge_age = opts['purge_age'].to_i
       @purge_interval = opts['purge_interval'].to_i
@@ -92,6 +110,12 @@ module Backup #:nodoc:
 
       @backup_directories = DEFAULT_OPTIONS['backup_directories']
       @backup_interval = DEFAULT_OPTIONS['backup_interval']
+
+      @mysql_host = DEFAULT_OPTIONS['mysql_host']
+      @mysql_port = DEFAULT_OPTIONS['mysql_port']
+      @mysql_user = DEFAULT_OPTIONS['mysql_user']
+      @mysql_password = DEFAULT_OPTIONS['mysql_password']
+      @mysql_databases = DEFAULT_OPTIONS['mysql_databases']
 
       @purge_age = DEFAULT_OPTIONS['purge_age']
       @purge_interval = DEFAULT_OPTIONS['purge_interval']

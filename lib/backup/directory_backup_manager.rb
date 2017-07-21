@@ -2,13 +2,8 @@
 
 module Backup #:nodoc:
   # Manages the backing up of directories
-  class DirectoryBackupManager
+  class DirectoryBackupManager < BackupManager
     include Logging
-
-    def initialize(vault, config)
-      @vault = vault
-      @config = config
-    end
 
     def run
       logger.info 'Backing up directories on schedule'
@@ -61,11 +56,6 @@ module Backup #:nodoc:
       Dir.chdir previous_dir
 
       destination
-    end
-
-    def upload_archive(name, path)
-      uploader = ArchiveUploader.new @vault
-      uploader.upload path, name: name
     end
   end
 end
