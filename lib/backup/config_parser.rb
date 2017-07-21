@@ -7,6 +7,8 @@ require 'yaml'
 module Backup #:nodoc:
   # A parser of a given Yaml config file or string
   class ConfigParser
+    attr_reader :log_directory
+
     attr_reader :aws_access_key_id
     attr_reader :aws_secret_access_key
     attr_reader :aws_user
@@ -14,7 +16,7 @@ module Backup #:nodoc:
     attr_reader :glacier_arn
     attr_reader :glacier_vault
 
-    attr_reader :backup_directories
+    attr_reader :directories
     attr_reader :backup_interval
 
     attr_reader :mysql_host
@@ -27,13 +29,14 @@ module Backup #:nodoc:
     attr_reader :purge_interval
 
     DEFAULT_OPTIONS = {
+      'log_directory'         => './logs',
       'aws_access_key_id'     => '',
       'aws_secret_access_key' => '',
       'aws_user'              => '-',
       'glacier_arn'           => '',
       'glacier_vault'         => '',
-      'backup_directories'    => [],
       'backup_interval'       => 24, # Every 24 hours
+      'directories'           => [],
       'mysql_host'            => 'localhost',
       'mysql_port'            => 3306,
       'mysql_user'            => 'me',
@@ -66,11 +69,12 @@ module Backup #:nodoc:
     end
 
     def parse!(yaml)
-      # Reset to defaults
-
       # Merge the yaml with the defaults
       yaml ||= {}
       opts = DEFAULT_OPTIONS.merge yaml
+
+      # Parse the global config settings
+      @log_directory = opts['log_directory']
 
       # Parse the AWS settings
       @aws_access_key_id = opts['aws_access_key_id']
@@ -81,7 +85,7 @@ module Backup #:nodoc:
       @glacier_vault = opts['glacier_vault']
 
       # Parse the backup directories
-      @backup_directories = opts['backup_directories']
+      @directories = opts['directories']
       @backup_interval = opts['backup_interval']
 
       # Parse the MySQL database settings
@@ -101,6 +105,8 @@ module Backup #:nodoc:
     private
 
     def reset
+      @log_directory = DEFAULT_OPTIONS['log_directory']
+
       @aws_access_key_id = DEFAULT_OPTIONS['aws_access_key_id']
       @aws_secret_access_key = DEFAULT_OPTIONS['aws_secret_access_key']
       @aws_user = DEFAULT_OPTIONS['aws_user']
@@ -108,7 +114,7 @@ module Backup #:nodoc:
       @glacier_arn = DEFAULT_OPTIONS['glacier_arn']
       @glacier_vault = DEFAULT_OPTIONS['glacier_vault']
 
-      @backup_directories = DEFAULT_OPTIONS['backup_directories']
+      @directories = DEFAULT_OPTIONS['directories']
       @backup_interval = DEFAULT_OPTIONS['backup_interval']
 
       @mysql_host = DEFAULT_OPTIONS['mysql_host']

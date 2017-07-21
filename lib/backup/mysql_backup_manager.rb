@@ -11,8 +11,10 @@ module Backup #:nodoc:
       logger.info 'Backing up MySQL on schedule'
 
       @config.mysql_databases.each do |database_info|
-        return false unless backup_databases database_info
+        return false unless backup_database database_info
       end
+
+      true
     end
 
     private
@@ -37,7 +39,7 @@ module Backup #:nodoc:
       destination = Dir::Tmpname.create(["#{name}-", '.sql.xz']) {}
 
       # Run the app and compress the output stream
-      io = popen(args)
+      io = IO.popen(args)
       XZ.compress_stream(io) do |chunk|
         destination.write chunk
       end

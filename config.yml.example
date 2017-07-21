@@ -1,13 +1,18 @@
 ---
+log_directory: './logs'
+
 aws_access_key_id: 'abcdefg'
 aws_secret_access_key: '12345'
 glacier_arn: 'us-east-1'
 glacier_vault: 'backup'
-backup_directories:
+
+backup_interval: 24
+
+directories:
     -
         name: 'foo'
         path: '/tmp/foo'
-backup_interval: 24
+
 mysql_host: 'localhost'
 mysql_port: 3306
 mysql_user: 'me'
@@ -16,5 +21,6 @@ mysql_databases:
     -
         name: 'foo'
         database: 'foodb'
+
 purge_age: 432
 purge_interval: 1

@@ -8,9 +8,11 @@ module Backup #:nodoc:
     def run
       logger.info 'Backing up directories on schedule'
 
-      @config.backup_directories.each do |directory|
+      @config.directories.each do |directory|
         return false unless backup_directory(directory)
       end
+
+      true
     end
 
     private

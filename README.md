@@ -18,7 +18,7 @@ The following options are available for the `config.yml` file:
 
 `glacier_vault`: The existing Amazon Glacier Vault to store your backups in.
 
-`backup_directories`: A list of directories that should be backed up. Each entry requires a `name` and `path`.
+`directories`: A list of directories that should be backed up. Each entry requires a `name` and `path`.
 
 `backup_interval`: The interval in hours to back up each directory.
 

@@ -8,13 +8,6 @@ require 'optparse'
 
 include Backup
 
-# Prepare the logger
-logger = Logger.new(STDOUT)
-Logging.logger = logger
-
-# Log the version
-logger.info "Backup #{Backup::VERSION}"
-
 # Parse the options from the command line
 options = {
   force: false
@@ -54,6 +47,14 @@ rescue => e
   $stderr.puts e.message
   exit 1
 end
+
+# Prepare the logger
+log_file = File.join config.log_directory, 'backup.log'
+logger = Logger.new log_file, 'daily'
+Logging.logger = logger
+
+# Log the version
+logger.info "Backup #{Backup::VERSION}"
 
 # Run the main loop
 main_loop = MainLoop.new config, force: true

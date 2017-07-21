@@ -148,8 +148,13 @@ module Backup #:nodoc:
     def start_inventory_request
       logger.info 'Purge manager is requesting a new inventory'
 
-      @vault.initiate_inventory_retrieval
-      change_state :waiting
+      begin
+        @vault.initiate_inventory_retrieval
+        change_state :waiting
+      rescue Aws::Glacier::Errors::ResourceNotFoundException
+        # No inventory yet, so do nothing
+        logger.warn 'Purge manager cannot start with the initial inventory. Waiting until it is generated'
+      end
     end
   end
 end
