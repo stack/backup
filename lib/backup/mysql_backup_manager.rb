@@ -39,7 +39,7 @@ module Backup #:nodoc:
       destination = Dir::Tmpname.create(["#{name}-", '.sql.xz']) {}
 
       # Run the app and compress the output stream
-      open(destination) do |output|
+      open(destination, 'w') do |output|
         io = IO.popen(args)
         XZ.compress_stream(io) do |chunk|
           output.write chunk
