@@ -39,9 +39,11 @@ module Backup #:nodoc:
       destination = Dir::Tmpname.create(["#{name}-", '.sql.xz']) {}
 
       # Run the app and compress the output stream
-      io = IO.popen(args)
-      XZ.compress_stream(io) do |chunk|
-        destination.write chunk
+      open(destination) do |output|
+        io = IO.popen(args)
+        XZ.compress_stream(io) do |chunk|
+          output.write chunk
+        end
       end
 
       logger.info "Archived \"#{database}\" to #{destination}"
